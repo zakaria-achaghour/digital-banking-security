@@ -19,8 +19,10 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.JdbcUserDetailsManager;
 
 import java.util.Date;
 import java.util.List;
@@ -36,6 +38,20 @@ public class DigitalBankingApplication {
 	@Bean
 	PasswordEncoder passwordEncoder () {
 		return new BCryptPasswordEncoder();
+	}
+	// @Bean
+	CommandLineRunner commandLineRunnerJdbcUssrs(JdbcUserDetailsManager jdbcUserDetailsManager){
+		PasswordEncoder passwordEncoder = passwordEncoder();
+		return args -> {
+			jdbcUserDetailsManager.createUser(
+					// User.withUsername("user1").password(passwordEncoder.encode("12345")).roles("USER").build()
+					User.withUsername("user1").password(passwordEncoder.encode("12345")).authorities("USER").build()
+					// permissions
+			);
+			jdbcUserDetailsManager.createUser(
+					User.withUsername("admin").password(passwordEncoder.encode("12345")).roles("ADMIN", "USER").build()
+			);
+		};
 	}
 
 	//@Bean
