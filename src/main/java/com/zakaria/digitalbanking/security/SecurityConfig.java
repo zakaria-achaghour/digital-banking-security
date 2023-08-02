@@ -1,6 +1,7 @@
 package com.zakaria.digitalbanking.security;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
+import com.zakaria.digitalbanking.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,11 +39,14 @@ public class SecurityConfig {
     private String secretKey;
     private PasswordEncoder passwordEncoder;
 
-    public SecurityConfig(PasswordEncoder passwordEncoder) {
+    private UserDetailsServiceImpl userDetailsServiceImpl;
+
+    public SecurityConfig(PasswordEncoder passwordEncoder, UserDetailsServiceImpl userDetailsServiceImpl) {
         this.passwordEncoder = passwordEncoder;
+        this.userDetailsServiceImpl = userDetailsServiceImpl;
     }
 
-    @Bean
+   // @Bean
     public JdbcUserDetailsManager jdbcUserDetailsManager(DataSource dataSource) {
         return new JdbcUserDetailsManager(dataSource);
     }
@@ -64,6 +68,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(ahr -> ahr.requestMatchers("/auth/login/**").permitAll())
                 .authorizeHttpRequests(ahr -> ahr.anyRequest().authenticated())
                 //.httpBasic(Customizer.withDefaults())
+                .userDetailsService(userDetailsServiceImpl)
                 .oauth2ResourceServer(oa -> oa.jwt(Customizer.withDefaults()))
                 .build();
     }

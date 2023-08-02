@@ -14,6 +14,7 @@ import com.zakaria.digitalbanking.exceptions.CustomerNotFoundException;
 import com.zakaria.digitalbanking.repositories.AccountOperationRepository;
 import com.zakaria.digitalbanking.repositories.BankAccountRepository;
 import com.zakaria.digitalbanking.repositories.CustomerRepository;
+import com.zakaria.digitalbanking.services.AppAcocountService;
 import com.zakaria.digitalbanking.services.BankAccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -39,6 +40,29 @@ public class DigitalBankingApplication {
 	PasswordEncoder passwordEncoder () {
 		return new BCryptPasswordEncoder();
 	}
+
+	@Bean
+	CommandLineRunner commandLineRunnerUserDetails(AppAcocountService appAcocountService) {
+		return args -> {
+
+			// method personalize
+			appAcocountService.addNewRole("USER");
+			appAcocountService.addNewRole("ADMIN");
+
+			appAcocountService.addNewUser("user1", "1234", "user1@gmail.com", "1234");
+			appAcocountService.addNewUser("user2", "1234", "user2@gmail.com", "1234");
+			appAcocountService.addNewUser("admin", "1234", "admin@gmail.com", "1234");
+
+
+			appAcocountService.attachRoleToUser("user1", "USER");
+			appAcocountService.attachRoleToUser("user2", "USER");
+			appAcocountService.attachRoleToUser("admin", "USER");
+			appAcocountService.attachRoleToUser("admin", "ADMIN");
+
+		};
+	}
+
+
 	// @Bean
 	CommandLineRunner commandLineRunnerJdbcUssrs(JdbcUserDetailsManager jdbcUserDetailsManager){
 		PasswordEncoder passwordEncoder = passwordEncoder();
